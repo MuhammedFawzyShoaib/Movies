@@ -1,147 +1,167 @@
-🎬 Movie Night Project
-📂 Project Structure
-Movies-Project/
-│
-├── server/                # Backend (Node.js + Express + MongoDB)
+---
+
+markdown
+# 🎬 Movie Night - Full Stack Project
+
+A full-stack web application to explore movies using IMDb datasets, add movies to a **wishlist**, and manage your personalized collection.  
+This project consists of a **backend (Node.js + Express + MongoDB)** and a **frontend (React)**.
+
+---
+
+## 📂 Project Structure
+
+
+Movies/
+│── server/              # Backend (Node.js + Express + MongoDB)
 │   ├── src/
-│   │   ├── models/        # Mongoose schemas (e.g., Movie.js, Wishlist.js)
-│   │   ├── routes/        # Express routes (movieRoutes.js, wishlistRoutes.js)
-│   │   ├── controllers/   # Route handlers (movieController.js, wishlistController.js)
-│   │   ├── build/         # Scripts for building DB from .tsv/.json
-│   │   └── index.js       # Main Express app
+│   │   ├── models/      # MongoDB models (Movie.js, Wishlist.js)
+│   │   ├── routes/      # API routes
+│   │   ├── controllers/ # Request handlers
+│   │   ├── build/       # IMDb dataset parsing
+│   │   └── index.js     # Entry point
 │   ├── package.json
-│   └── README.md
 │
-├── movies-app/            # Frontend (React + Vite/CRA)
+│── client/              # Frontend (React)
 │   ├── src/
-│   │   ├── components/    # UI Components (MovieCard, Wishlist, Navbar, etc.)
-│   │   ├── pages/         # Pages (Home.js, WishlistPage.js)
-│   │   ├── services/      # API calls (movieService.js, wishlistService.js)
-│   │   ├── App.js
-│   │   └── index.js
+│   │   ├── components/  # React components (MovieList, Wishlist, Navbar, etc.)
+│   │   ├── pages/       # React pages
+│   │   ├── App.js       # Main React app
+│   │   └── index.js     # React entry point
+│   ├── public/
 │   ├── package.json
-│   └── README.md
 │
-└── README.md              # Root documentation (this file)
-
-⚙️ Backend (server)
-✅ Current Features
-
-Loads movies from .tsv or .json files into MongoDB.
-
-Exposes REST APIs to fetch movies.
-
-🛠️ What to Add for Wishlist
-
-Model (src/models/Wishlist.js)
-
-const mongoose = require('mongoose');
-
-const wishlistSchema = new mongoose.Schema({
-  userId: { type: String, required: true }, 
-  movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
-});
-
-module.exports = mongoose.model('Wishlist', wishlistSchema);
+└── README.md
 
 
-Controller (src/controllers/wishlistController.js)
+---
 
-getWishlist(req, res) → return all movies in wishlist
+## ⚙ Backend Setup (Server)
 
-addToWishlist(req, res) → add movie by ID
+1. Navigate to the server folder:
+   bash
+   cd server
+   npm install
+   
 
-removeFromWishlist(req, res) → remove movie by ID
+2. Create a `.env` file:
+   env
+   MONGO_URI=mongodb://localhost:27017/movies
+   PORT=5000
+   
 
-Routes (src/routes/wishlistRoutes.js)
+3. Run the backend:
+   bash
+   npm start
+   
 
-const express = require('express');
-const { getWishlist, addToWishlist, removeFromWishlist } = require('../controllers/wishlistController');
-const router = express.Router();
+### API Endpoints
 
-router.get('/:userId', getWishlist);
-router.post('/:userId/add/:movieId', addToWishlist);
-router.delete('/:userId/remove/:movieId', removeFromWishlist);
+#### 🎥 Movies
+- `GET /api/movies` → Fetch all movies  
+- `GET /api/movies/:id` → Get details of a movie  
 
-module.exports = router;
+#### ⭐ Wishlist
+- `GET /api/wishlist` → Get all movies in wishlist  
+- `POST /api/wishlist/:movieId` → Add a movie to wishlist  
+- `DELETE /api/wishlist/:movieId` → Remove a movie from wishlist  
 
+📸 Example Screenshot:
+![API Testing in Postman](./screenshots/api-postman.png)
 
-Link routes in backend (src/index.js)
+---
 
-const wishlistRoutes = require('./routes/wishlistRoutes');
-app.use('/api/wishlist', wishlistRoutes);
+## 🎨 Frontend Setup (Client)
 
-🎨 Frontend (movies-app)
-✅ Current Features
+1. Navigate to client folder:
+   bash
+   cd client
+   npm install
+   
 
-Displays movie list.
+2. Run React app:
+   bash
+   npm start
+   
 
-Calls backend to fetch movies.
+3. Update API base URL in `client/src/utils/api.js`:
+   javascript
+   const API_BASE = "http://localhost:5000/api";
+   
 
-🛠️ What to Add for Wishlist
+---
 
-Service Layer (src/services/wishlistService.js)
+## 📌 Frontend Components
 
-import axios from 'axios';
+- **MovieList.js** → Displays movies fetched from backend  
+- **MovieCard.js** → Single movie with "Add to Wishlist" button  
+- **Wishlist.js** → Shows saved wishlist, with remove option  
+- **Navbar.js** → Navigation between Movies and Wishlist  
 
-const API_URL = 'http://localhost:5000/api/wishlist';
+📸 Example Screenshots:  
+- Home Page:  
+  ![Movies Page](./screenshots/movies-page.png)  
 
-export const getWishlist = (userId) => axios.get(`${API_URL}/${userId}`);
-export const addToWishlist = (userId, movieId) => axios.post(`${API_URL}/${userId}/add/${movieId}`);
-export const removeFromWishlist = (userId, movieId) => axios.delete(`${API_URL}/${userId}/remove/${movieId}`);
+- Wishlist Page:  
+  ![Wishlist Page](./screenshots/wishlist-page.png)  
 
+---
 
-Components to Update
+## 🚀 How to Link Backend with Frontend
 
-MovieCard.js → Add "Add to Wishlist" button.
+1. Start **backend**:
+   bash
+   cd server
+   npm start
+   
 
-Wishlist.js → List of movies in wishlist with "Remove" button.
+2. Start **frontend**:
+   bash
+   cd client
+   npm start
+   
 
-Pages to Add
+3. The frontend (React) makes requests to `http://localhost:5000/api`.
 
-WishlistPage.js → Renders <Wishlist /> component and fetches wishlist data from API.
+---
 
-App Navigation (App.js)
+## 🛠 Features Implemented
 
-import WishlistPage from './pages/WishlistPage';
+- ✅ Import IMDb dataset into MongoDB  
+- ✅ REST APIs for movies and wishlist  
+- ✅ React frontend with movies and wishlist pages  
 
-<Routes>
-  <Route path="/" element={<Home />} />
-  <Route path="/wishlist" element={<WishlistPage />} />
-</Routes>
+---
 
-🔗 Linking Frontend & Backend
+## 🗂 Next Steps (To-Do)
 
-Start backend:
+- 🔍 Add **search** functionality for movies  
+- 📊 Add **pagination** for better performance  
+- 🎭 Add **genres and ratings filter**  
+- 👤 Add **user authentication (JWT)** so wishlist is personal  
+- 🌍 Deploy on **Heroku (backend)** + **Netlify/Vercel (frontend)**  
 
-cd server
-npm install
-npm start
+---
 
+## 👨‍💻 Contributing
 
-Default runs at: http://localhost:5000
+1. Fork the repo  
+2. Create a new branch  
+   bash
+   git checkout -b feature-name
+   
+3. Commit changes  
+   bash
+   git commit -m "Added new feature"
+   
+4. Push branch and create PR  
 
-Start frontend:
+---
 
-cd movies-app
-npm install
-npm start
+## 📷 Screenshots Folder
 
+Please place all screenshots in the `./screenshots/` folder:  
+- `movies-page.png`  
+- `wishlist-page.png`  
+- `api-postman.png`  
 
-Runs at: http://localhost:3000
-
-Configure proxy in movies-app/package.json:
-
-"proxy": "http://localhost:5000"
-
-📌 Remaining Tasks
-
- Add authentication (basic user login) to make wishlist user-specific.
-
- Improve movie search/filter on frontend.
-
- Add pagination for large movie lists.
-
- Styling/UI improvements.
-
- Deploy backend (Heroku, Render, etc.) & frontend (Vercel, Netlify).
+---
